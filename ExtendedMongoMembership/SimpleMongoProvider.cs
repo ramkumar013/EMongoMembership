@@ -245,13 +245,13 @@ namespace ExtendedMongoMembership
             using (var session = new MongoSession(_connectionString))
             {
                 MembershipAccount user = null;
-                if (session.Users.Count()>0)
+                if (session.Users.Count() > 0)
                 {
-                     user = session.Users.FirstOrDefault(x => x.UserName == userName);
-                    if (user == null)
-                    {
-                        throw new MembershipCreateUserException(MembershipCreateStatus.InvalidUserName);
-                    }
+                    user = session.Users.FirstOrDefault(x => x.UserName == userName);
+                    //if (user != null)
+                    //{
+                    //    throw new MembershipCreateUserException(MembershipCreateStatus.InvalidUserName);
+                    //}
                 }
                 return user;
             }
@@ -396,8 +396,8 @@ namespace ExtendedMongoMembership
             var usr = GetUser(userName);
             if (usr != null)
             {
-                // User not found
-                throw new MembershipCreateUserException(MembershipCreateStatus.ProviderError);
+                // User found
+                throw new MembershipCreateUserException(MembershipCreateStatus.DuplicateUserName);
             }
 
             using (var session = new MongoSession(_connectionString))

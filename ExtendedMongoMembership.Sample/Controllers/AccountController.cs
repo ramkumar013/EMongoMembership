@@ -1,7 +1,7 @@
-﻿using DotNetOpenAuth.AspNet;
+﻿//using Microsoft.Web.WebPages.OAuth;
+//using DotNetOpenAuth.AspNet;
 using ExtendedMongoMembership.Sample.Models;
 using ExtendedMongoMembership.Sample.Services;
-using Microsoft.Web.WebPages.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -98,26 +98,28 @@ namespace ExtendedMongoMembership.Sample.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Disassociate(string provider, string providerUserId)
         {
-            string ownerAccount = OAuthWebSecurity.GetUserName(provider, providerUserId);
-            ManageMessageId? message = null;
+            //string ownerAccount = OAuthWebSecurity.GetUserName(provider, providerUserId);
+            //ManageMessageId? message = null;
 
-            // Only disassociate the account if the currently logged in user is the owner
-            if (ownerAccount == User.Identity.Name)
-            {
-                // Use a transaction to prevent the user from deleting their last login credential
-                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
-                {
-                    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-                    if (hasLocalAccount || OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name).Count > 1)
-                    {
-                        OAuthWebSecurity.DeleteAccount(provider, providerUserId);
-                        scope.Complete();
-                        message = ManageMessageId.RemoveLoginSuccess;
-                    }
-                }
-            }
+            //// Only disassociate the account if the currently logged in user is the owner
+            //if (ownerAccount == User.Identity.Name)
+            //{
+            //    // Use a transaction to prevent the user from deleting their last login credential
+            //    using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+            //    {
+            //        bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            //        if (hasLocalAccount || OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name).Count > 1)
+            //        {
+            //            OAuthWebSecurity.DeleteAccount(provider, providerUserId);
+            //            scope.Complete();
+            //            message = ManageMessageId.RemoveLoginSuccess;
+            //        }
+            //    }
+            //}
 
-            return RedirectToAction("Manage", new { Message = message });
+            //return RedirectToAction("Manage", new { Message = message });
+
+            throw new NotImplementedException();
         }
 
         //
@@ -216,31 +218,32 @@ namespace ExtendedMongoMembership.Sample.Controllers
         [AllowAnonymous]
         public ActionResult ExternalLoginCallback(string returnUrl)
         {
-            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
-            if (!result.IsSuccessful)
-            {
-                return RedirectToAction("ExternalLoginFailure");
-            }
+            //AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
+            //if (!result.IsSuccessful)
+            //{
+            //    return RedirectToAction("ExternalLoginFailure");
+            //}
 
-            if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
-            {
-                return RedirectToLocal(returnUrl);
-            }
+            //if (OAuthWebSecurity.Login(result.Provider, result.ProviderUserId, createPersistentCookie: false))
+            //{
+            //    return RedirectToLocal(returnUrl);
+            //}
 
-            if (User.Identity.IsAuthenticated)
-            {
-                // If the current user is logged in add the new account
-                OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, User.Identity.Name);
-                return RedirectToLocal(returnUrl);
-            }
-            else
-            {
-                // User is new, ask for their desired membership name
-                string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
-                ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(result.Provider).DisplayName;
-                ViewBag.ReturnUrl = returnUrl;
-                return View("ExternalLoginConfirmation", new RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData });
-            }
+            //if (User.Identity.IsAuthenticated)
+            //{
+            //    // If the current user is logged in add the new account
+            //    OAuthWebSecurity.CreateOrUpdateAccount(result.Provider, result.ProviderUserId, User.Identity.Name);
+            //    return RedirectToLocal(returnUrl);
+            //}
+            //else
+            //{
+            //    // User is new, ask for their desired membership name
+            //    string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
+            //    ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(result.Provider).DisplayName;
+            //    ViewBag.ReturnUrl = returnUrl;
+            //    return View("ExternalLoginConfirmation", new RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData });
+            //}
+            throw new NotImplementedException();
         }
 
         //
@@ -251,40 +254,41 @@ namespace ExtendedMongoMembership.Sample.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLoginConfirmation(RegisterExternalLoginModel model, string returnUrl)
         {
-            string provider = null;
-            string providerUserId = null;
+            //string provider = null;
+            //string providerUserId = null;
 
-            if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
-            {
-                return RedirectToAction("Manage");
-            }
+            //if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
+            //{
+            //    return RedirectToAction("Manage");
+            //}
 
-            if (ModelState.IsValid)
-            {
-                var userId = WebSecurity.GetUserId(model.UserName);
-                if (userId == -1)
-                {
-                    string str = ConfigurationManager.ConnectionStrings["mongodb"].ConnectionString;
-                    DefaultUserProfileService service = new DefaultUserProfileService(str);
-                    SampleUserProfile profile = new SampleUserProfile();
-                    profile.UserName = model.UserName;
-                    service.CreateProfile(profile);
+            //if (ModelState.IsValid)
+            //{
+            //    var userId = WebSecurity.GetUserId(model.UserName);
+            //    if (userId == -1)
+            //    {
+            //        string str = ConfigurationManager.ConnectionStrings["mongodb"].ConnectionString;
+            //        DefaultUserProfileService service = new DefaultUserProfileService(str);
+            //        SampleUserProfile profile = new SampleUserProfile();
+            //        profile.UserName = model.UserName;
+            //        service.CreateProfile(profile);
 
-                    OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
-                    OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
+            //        OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
+            //        OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
 
-                    return RedirectToLocal(returnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
-                }
+            //        return RedirectToLocal(returnUrl);
+            //    }
+            //    else
+            //    {
+            //        ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
+            //    }
 
-            }
+            //}
 
-            ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(provider).DisplayName;
-            ViewBag.ReturnUrl = returnUrl;
-            return View(model);
+            //ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(provider).DisplayName;
+            //ViewBag.ReturnUrl = returnUrl;
+            //return View(model);
+            throw new NotImplementedException();
         }
 
         //
@@ -300,29 +304,31 @@ namespace ExtendedMongoMembership.Sample.Controllers
         [ChildActionOnly]
         public ActionResult ExternalLoginsList(string returnUrl)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return PartialView("_ExternalLoginsListPartial", OAuthWebSecurity.RegisteredClientData);
+            //ViewBag.ReturnUrl = returnUrl;
+            //return PartialView("_ExternalLoginsListPartial", OAuthWebSecurity.RegisteredClientData);
+            throw new NotImplementedException();
         }
 
         [ChildActionOnly]
         public ActionResult RemoveExternalLogins()
         {
-            ICollection<OAuthAccount> accounts = OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name);
-            List<ExternalLogin> externalLogins = new List<ExternalLogin>();
-            foreach (OAuthAccount account in accounts)
-            {
-                AuthenticationClientData clientData = OAuthWebSecurity.GetOAuthClientData(account.Provider);
+            //ICollection<OAuthAccount> accounts = OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name);
+            //List<ExternalLogin> externalLogins = new List<ExternalLogin>();
+            //foreach (OAuthAccount account in accounts)
+            //{
+            //    AuthenticationClientData clientData = OAuthWebSecurity.GetOAuthClientData(account.Provider);
 
-                externalLogins.Add(new ExternalLogin
-                {
-                    Provider = account.Provider,
-                    ProviderDisplayName = clientData.DisplayName,
-                    ProviderUserId = account.ProviderUserId,
-                });
-            }
+            //    externalLogins.Add(new ExternalLogin
+            //    {
+            //        Provider = account.Provider,
+            //        ProviderDisplayName = clientData.DisplayName,
+            //        ProviderUserId = account.ProviderUserId,
+            //    });
+            //}
 
-            ViewBag.ShowRemoveButton = externalLogins.Count > 1 ;//|| OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-            return PartialView("_RemoveExternalLoginsPartial", externalLogins);
+            //ViewBag.ShowRemoveButton = externalLogins.Count > 1 ;//|| OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            //return PartialView("_RemoveExternalLoginsPartial", externalLogins);
+            throw new NotImplementedException();
         }
 
         #region Helpers
@@ -358,7 +364,7 @@ namespace ExtendedMongoMembership.Sample.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
+                //OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
             }
         }
 

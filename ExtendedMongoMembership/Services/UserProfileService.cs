@@ -32,6 +32,7 @@ namespace ExtendedMongoMembership.Services
         {
             _connectionString = connectionString;
             _databaseName = connectionString.Substring(connectionString.LastIndexOf('/') + 1);
+            _databaseName = _databaseName.Substring(0, _databaseName.IndexOf('?'));
             _client = new MongoClient(connectionString);
             _server = _client.GetServer();
             _database = _server.GetDatabase(_databaseName);

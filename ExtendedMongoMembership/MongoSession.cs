@@ -1,4 +1,5 @@
 ﻿using ExtendedMongoMembership.Entities;
+using ExtendedMongoMembership.Helpers;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -29,7 +30,7 @@ namespace ExtendedMongoMembership
         }
         public MongoSession()
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+            var connectionString = SecurityHelper.Decrypt(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString, true);
             _mongoUrl = new MongoUrl(connectionString);
         }
 
@@ -70,7 +71,7 @@ namespace ExtendedMongoMembership
 
         public MongoSession(string connectionString)
         {
-            _mongoUrl = new MongoUrl(connectionString);
+            _mongoUrl = new MongoUrl(SecurityHelper.Decrypt(connectionString, true));
             _client = new MongoClient(_mongoUrl);
             _server = _client.GetServer();
             _provider = _server.GetDatabase(_mongoUrl.DatabaseName, WriteConcern.Acknowledged);
